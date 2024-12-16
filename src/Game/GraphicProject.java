@@ -5,6 +5,8 @@ import javax.media.opengl.*;
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 public class GraphicProject extends JFrame {
@@ -16,21 +18,20 @@ public class GraphicProject extends JFrame {
             // تحديد المسار لملف الصوت
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(SoundTest.class.getResource("/resources/gameAudio.wav"));
 
-
+            // الحصول على الكائن الذي يمكنه تشغيل الصوت
             Clip clip = AudioSystem.getClip();
 
-
+            // تحميل الملف الصوتي في الكائن
             clip.open(audioInputStream);
 
-
+            // تشغيل الصوت
             clip.start();
 
-
+            // الانتظار حتى ينتهي الصوت
             Thread.sleep(clip.getMicrosecondLength() / 1000);
         } catch (UnsupportedAudioFileException | LineUnavailableException | InterruptedException | IOException e) {
 //            e.finalize();
         }
-
     }
 
     public GraphicProject() {
@@ -40,7 +41,27 @@ public class GraphicProject extends JFrame {
         glcanvas.addKeyListener(listener);
         getContentPane().add(glcanvas, BorderLayout.CENTER);
         Animator animator = new FPSAnimator(glcanvas, 30);
-        animator.start();
+        JButton startButton = new JButton("Start Game");
+        startButton.setFocusable(false);
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!animator.isAnimating()) {
+                    animator.start();
+                    startButton.setText("Stop Game");
+                } else {
+                    animator.stop();
+                    startButton.setText("Start Game");
+                }
+            }
+        });
+
+
+        JPanel controlPanel = new JPanel();
+        controlPanel.add(startButton);
+
+        getContentPane().add(glcanvas, BorderLayout.CENTER);
+        getContentPane().add(controlPanel, BorderLayout.SOUTH);
         configureWindow();
         glcanvas.requestFocus();
     }
