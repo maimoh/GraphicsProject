@@ -2,14 +2,35 @@ package Game;
 
 import com.sun.opengl.util.*;
 import javax.media.opengl.*;
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class GraphicProject extends JFrame {
 
     public static void main(String[] args) {
 
         new GraphicProject();
+        try {
+            // تحديد المسار لملف الصوت
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(SoundTest.class.getResource("/resources/gameAudio.wav"));
+
+
+            Clip clip = AudioSystem.getClip();
+
+
+            clip.open(audioInputStream);
+
+
+            clip.start();
+
+
+            Thread.sleep(clip.getMicrosecondLength() / 1000);
+        } catch (UnsupportedAudioFileException | LineUnavailableException | InterruptedException | IOException e) {
+//            e.finalize();
+        }
+
     }
 
     public GraphicProject() {
@@ -18,7 +39,7 @@ public class GraphicProject extends JFrame {
         glcanvas.addGLEventListener(listener);
         glcanvas.addKeyListener(listener);
         getContentPane().add(glcanvas, BorderLayout.CENTER);
-        Animator animator = new FPSAnimator(glcanvas, 60);
+        Animator animator = new FPSAnimator(glcanvas, 30);
         animator.start();
         configureWindow();
         glcanvas.requestFocus();
